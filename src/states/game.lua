@@ -1,11 +1,36 @@
 local game = {}
 
 local loveframes = nil
-function menu:init()
+local zones = require "zones"
+local decks = require "decks"
+local JSON = require "lib.JSON"
+
+function game:init()
     loveframes = require('lib.loveframes')
+    self.tableImage = love.graphics.newImage("images/tabletop_background.png")
 end
 
-function menu:update(dt)
+function game:setSocket(socket)
+    self.socket = socket
+end
+
+function game:enter()
+    loveframes.SetState("game")
+    love.graphics.setBackgroundColor(20,20,20,20)
+
+    self.zones = {
+        deck=zones.Deck:new(),
+        carry=zones.Carry:new(),
+        hand=zones.Hand:new(),
+        field=zones.Field:new()
+    }
+
+    self.zones.deck:setCards(decks.load("igor"))
+
+    self.lastMouse={x=0, y=0}
+end
+
+function game:update(dt)
 
     -- your code
 
@@ -13,49 +38,97 @@ function menu:update(dt)
 
 end
 
-function menu:draw()
-
-    -- your code
+function game:draw()
+    love.graphics.draw(self.tableImage, 0, 0, 0)
+    self.zones.field:draw()
+    self.zones.deck:draw()
+    self.zones.hand:draw()
+    self.zones.carry:draw()
 
     loveframes.draw()
-
 end
 
-function menu:mousepressed(x, y, button)
+function game:mousemoved(x, y)
+    self.lastMouse = {x=x, y=y}
+	self.zones.carry:mouseMoved(x, y)
+end
 
-    -- your code
+function game:send(table)
+    self.socket:send(JSON:encode(table).."\n")
+end
+
+function game:drawToCarry()
+    card = self.zones.deck:removeTop()
+    self.zones.carry:addCard(card)
+    self.socket:send{command="drawToCarry"}
+end
+
+local function fieldToCarry(zones, x, y)
+    card = zones.field:removeCardAt(x, y)
+    zones.carry:addCard(card)
+end
+
+local function handToCarry(zones, x, y)
+    card = zones.hand:removeCardAt(x, y)
+    zones.carry:addCard(card)
+end
+
+local function carryToHand(zones)
+    zones.hand:addCard(zones.carry:removeTop())
+end
+
+local function carryToField(zones)
+    zones.field:addCard(zones.carry:removeTop())
+end
+
+function game:mousepressed(x, y, button)
+	if self.zones.deck:isClicked(x, y) then
+		self:drawToCarry()
+    elseif self.zones.hand:isClicked(x, y) then
+		handToCarry(self.zones, x, y)
+	elseif self.zones.field:getCardAt(x, y) then
+        fieldToCarry(self.zones, x, y)
+    end
 
     loveframes.mousepressed(x, y, button)
-
 end
 
-function menu:mousereleased(x, y, button)
-
-    -- your code
+function game:mousereleased(x, y, button)
+    if self.zones.carry:hasCards() then
+    	if self.zones.hand:isClicked(x, y) then
+    		carryToHand(self.zones)
+    	else
+            carryToField(self.zones)
+        end
+    end
 
     loveframes.mousereleased(x, y, button)
-
 end
 
-function menu:keypressed(key, unicode)
-
-    -- your code
+function game:keypressed(key, unicode)
+    if key == "escape" then
+        love.event.quit()
+    elseif key == "f" then
+        hovering = self.zones.field:getCardAt(self.lastMouse.x, self.lastMouse.y)
+        if hovering then hovering:flip() end
+    elseif key == "t" then
+        hovering = self.zones.field:getCardAt(self.lastMouse.x, self.lastMouse.y)
+        if hovering then hovering:toggleUsed() end
+    end
 
     loveframes.keypressed(key, unicode)
-
 end
 
-function menu:keyreleased(key)
-
+function game:keyreleased(key)
     -- your code
 
     loveframes.keyreleased(key)
-
 end
 
-function menu:textinput(text)
-
+function game:textinput(text)
     -- your code
 
     loveframes.textinput(text)
 end
+
+return game
