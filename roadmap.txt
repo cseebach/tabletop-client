@@ -1,0 +1,6 @@
+Version 1
+=========
+
+* Load and shuffle deck from file.
+* Click deck to draw
+* Drag from hand to place on grid
