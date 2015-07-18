@@ -14,7 +14,7 @@ end
 
 function menu:joinGame(name, password, faction)
     local message = {
-        command="joinGame",
+        action="joinGame",
         name=name,
         password=password,
         faction=faction
@@ -24,14 +24,14 @@ function menu:joinGame(name, password, faction)
     print(response)
     print(error)
     local response = JSON:decode(response)
-    if response.command == "joined" then
+    if response.action == "joined" then
         self:switchToGame()
     end
 end
 
 function menu:createGame(name, password, faction)
     local message = {
-        command="createGame",
+        action="createGame",
         name=name,
         password=password,
         faction=faction
@@ -41,7 +41,7 @@ function menu:createGame(name, password, faction)
     print(response)
     print(error)
     local response = JSON:decode(response)
-    if response.command == "created" then
+    if response.action == "created" then
         self:switchToGame()
     end
 end

@@ -1,6 +1,6 @@
 function love.conf(t)
 	t.console = true
-	t.window.width = 1600
-	t.window.height = 900
-    t.window.fullscreen = false
+	t.window.width = 1920
+	t.window.height = 1080
+    t.window.fullscreen = true
 end

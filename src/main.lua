@@ -6,7 +6,7 @@ local game = require "states.game"
 function love.load()
     love.graphics.setBackgroundColor(50,50,50,255)
     Gamestate.registerEvents()
-    Gamestate.switch(game)
+    Gamestate.switch(menu)
 end
 
 
