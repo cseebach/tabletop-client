@@ -5,7 +5,7 @@ local socket = require "socket"
 local Gamestate = require "lib.hump.gamestate"
 local JSON = require "lib.JSON"
 
-local game = require "states.game"
+local game = require "states.game.game"
 
 function menu:switchToGame()
     game:setSocket(self.socket)

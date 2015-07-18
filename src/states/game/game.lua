@@ -20,10 +20,6 @@ function game:enter()
     loveframes.SetState("game")
     love.graphics.setBackgroundColor(20,20,20,20)
 
-    self.factions = {
-        dryads = {}
-    }
-
     self.zones = {
         deck=zones.Deck:new(),
         carry=zones.Carry:new(),
@@ -31,7 +27,7 @@ function game:enter()
         field=zones.Field:new()
     }
 
-    self.
+    self.cards = {}
 
     self.lastMouse={x=0, y=0}
 end
