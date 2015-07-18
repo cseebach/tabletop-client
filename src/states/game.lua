@@ -2,7 +2,8 @@ local game = {}
 
 local loveframes = nil
 local zones = require "zones"
-local decks = require "decks"
+local Card = require "Card"
+local cards = require "cards"
 local JSON = require "lib.JSON"
 
 function game:init()
@@ -12,6 +13,7 @@ end
 
 function game:setSocket(socket)
     self.socket = socket
+    self.socket:settimeout(.01)
 end
 
 function game:enter()
@@ -25,17 +27,47 @@ function game:enter()
         field=zones.Field:new()
     }
 
-    self.zones.deck:setCards(decks.load("igor"))
-
     self.lastMouse={x=0, y=0}
 end
 
-function game:update(dt)
+function game:send(table)
+    self.socket:send(JSON:encode(message).."\n")
+end
 
-    -- your code
+function game:receive()
+    local response, error = self.socket:receive()
+    if not error then
+        local decoded = JSON:decode(response)
+        return decoded, error
+    else
+        return nil, error
+    end
+end
+
+function game:processUpdate(update)
+    if update.action == "addToDeck" then
+        self.zones.deck:addCard(Card(cards[update.template]))
+    end
+end
+
+function game:processUpdates(updates)
+    for _, update in ipairs(updates) do
+        self:processUpdate(update)
+    end
+end
+
+function game:ping()
+    self:send{action="ping"}
+    response, error = self:receive()
+    if response then
+        self:processUpdates(response.updates)
+    end
+end
+
+function game:update(dt)
+    self:ping()
 
     loveframes.update(dt)
-
 end
 
 function game:draw()
