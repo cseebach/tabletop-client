@@ -9,11 +9,11 @@ local memoized = {}
 local function memoize(imagePath)
     if not memoized[imagePath] then
         memoized[imagePath] = love.graphics.newImage(imagePath)
-    end 
+    end
     return memoized[imagePath]
-end 
+end
 
-function Card:initialize(cardData)
+function Card:initialize(cardData, id)
     self.front = memoize("images/fronts/"..cardData.front)
     self.back  = memoize("images/backs/"..cardData.back)
     self.faceDown = true
@@ -21,27 +21,28 @@ function Card:initialize(cardData)
     self.x = 0
     self.y = 0
     self.scale = Card.default_scale
+    self.id = id
 end
 
 function Card:flip()
     self.faceDown = not self.faceDown
-end 
+end
 
 function Card:toggleUsed()
     self.used = not self.used
-end 
+end
 
 function Card:draw()
-    local image = self.front 
+    local image = self.front
     if self.faceDown then
-        image = self.back 
+        image = self.back
     end
-    if self.used then 
+    if self.used then
         love.graphics.draw(
-            image, 
-            self.x+375/4, self.y+525/4, 
-            math.pi/2, 
-            self.scale, self.scale, 
+            image,
+            self.x+375/4, self.y+525/4,
+            math.pi/2,
+            self.scale, self.scale,
             375/2, 525/2)
     else
         love.graphics.draw(image, self.x, self.y, 0, self.scale)
@@ -49,9 +50,8 @@ function Card:draw()
 end
 
 function Card:inside(x, y)
-    return  utils.within(self.x, 375/2, x) and 
+    return  utils.within(self.x, 375/2, x) and
             utils.within(self.y, 525/2, y)
 end
 
 return Card
-    

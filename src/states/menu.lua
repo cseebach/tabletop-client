@@ -239,8 +239,6 @@ end
 
 function menu:draw()
 
-    -- your code
-
     loveframes.draw()
 
 end

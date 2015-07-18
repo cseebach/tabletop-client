@@ -27,6 +27,8 @@ function game:enter()
         field=zones.Field:new()
     }
 
+    self.cards = {}
+
     self.lastMouse={x=0, y=0}
 end
 
@@ -46,7 +48,9 @@ end
 
 function game:processUpdate(update)
     if update.action == "addToDeck" then
-        self.zones.deck:addCard(Card(cards[update.template]))
+        card = Card(cards[update.template], update.card)
+        self.cards[update.card] = card
+        self.zones.deck:addCard(card)
     end
 end
 
@@ -92,7 +96,7 @@ end
 function game:drawToCarry()
     card = self.zones.deck:removeTop()
     self.zones.carry:addCard(card)
-    self.socket:send{command="drawToCarry"}
+    self:send{command="drawToCarry", card=card.id}
 end
 
 local function fieldToCarry(zones, x, y)
