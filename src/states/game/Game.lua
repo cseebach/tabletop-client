@@ -25,21 +25,60 @@ function Game:initialize(net)
 
     self.net = net
 
-    self.hidden = {}
+    self.carried = {}
     self.carry = Carry:new(net)
 
     self.viewing = self.factions.dryad
     self.sitting = nil
 end
 
-function Game:addToDeck(update)
+function Game:updateAddToDeck(update)
     card = Card:new(cards[update.template], update.card)
     self.factions[update.faction].deck:addCard(card)
 end
 
+function Game:updateFromDeck(update)
+    card = self.factions[update.faction].deck:removeTop()
+    self.carried[card.id] = card
+end
+
+function Game:updateFromField(update)
+    card = self.factions[update.faction].field:removeID(card.id)
+    self.carried[card.id] = card
+end
+
+function Game:updateFromHand(update)
+    card = self.factions[update.faction].hand:removeID(card.id)
+    self.carried[card.id] = card
+end
+
+function Game:updateToField(update)
+    local card = self.carried[card.id]
+    self.carried[card.id] = nil
+    card.x = update.x
+    card.y = update.y
+    self.factions[update.faction].field:addCard(card)
+end
+
+function Game:updateToHand(update)
+    local card = self.carried[card.id]
+    self.carried[card.id] = nil
+    card = self.factions[update.faction].hand:addCard(card)
+end
+
 function Game:processUpdate(update)
     if update.action == "addToDeck" then
-        self:addToDeck(update)
+        self:updateAddToDeck(update)
+    elseif update.action == "fromDeck" then
+        self:updateFromDeck(update)
+    elseif update.action == "fromField" then
+        self:updateFromField(update)
+    elseif update.action == "fromHand" then
+        self:updateFromHand(update)
+    elseif update.action == "toField" then
+        self:updateToField(update)
+    elseif update.action == "toHand" then
+        self:updateToHand(update)
     end
 end
 
@@ -63,13 +102,13 @@ end
 function Game:leftpressed(x, y)
     if self.viewing.deck:isClicked(x, y) then
         self.viewing.deck:from(self.carry)
-        self.net:send{action="toCarry", card=card.id}
+        self.net:send{action="fromDeck", card=card.id, faction=self.viewing.name}
     elseif self.viewing.hand:isClicked(x, y) then
         self.viewing.hand:fromAt(x, y, self.carry)
-        self.net:send{action="toCarry", card=card.id}
+        self.net:send{action="fromHand", card=card.id, faction=self.viewing.name}
     elseif self.viewing.field:getCardAt(x, y) then
         self.viewing.field:fromAt(x, y, self.carry)
-        self.net:send{action="toCarry", card=card.id}
+        self.net:send{action="fromField", card=card.id, faction=self.viewing.name}
     end
 end
 
@@ -77,10 +116,10 @@ function Game:leftreleased(x, y)
     if self.carry:hasCard() then
         if self.viewing.hand:isClicked(x, y) then
             self.carry:to(self.viewing.hand)
-            self.net:send{action="toHand", card=card.id, viewing=self.viewing.name}
+            self.net:send{action="toHand", card=card.id, faction=self.viewing.name}
         else
             self.carry:to(self.viewing.field)
-            self.net:send{action="toField", card=card.id, viewing=self.viewing.name, x=x, y=y}
+            self.net:send{action="toField", card=card.id, faction=self.viewing.name, x=x, y=y}
         end
     end
 end

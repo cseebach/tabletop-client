@@ -30,6 +30,13 @@ function Zone:removeTop()
 	return table.remove(self.cards, 1)
 end
 
+function Zone:removeID(id)
+    for i, card in ipairs(self.cards) do
+        if card.id == id then return table.remove(self.cards, i) end
+    end
+    return nil
+end
+
 function Zone:getCardAt(x, y)
     local last = 0
     for i, card in ipairs(self.cards) do
