@@ -15,4 +15,24 @@ function Faction:initialize(name)
     self.cards = {}
 end
 
+function Faction:drawToCarry()
+
+end
+
+function Faction:fieldToCarry(card_id)
+
+end
+
+function Faction:handToCarry(card_id)
+
+end
+
+function Faction:carryToHand()
+
+end
+
+function Faction:carryToField(x, y)
+
+end
+
 return Faction

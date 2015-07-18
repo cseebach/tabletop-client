@@ -61,63 +61,12 @@ function menu:createNewGameForm()
     createGamePassword:SetPlaceholderText("game password")
     createForm:AddItem(createGamePassword)
 
-    local createFactionLabel = loveframes.Create("text")
-    createFactionLabel:SetText("I'd like to play:")
-    createForm:AddItem(createFactionLabel)
-
-    local createFactionGrid = loveframes.Create("grid")
-    createFactionGrid:SetRows(2)
-    createFactionGrid:SetColumns(2)
-    createFactionGrid:SetCellWidth(90)
-    createFactionGrid:SetCellHeight(25)
-    createFactionGrid:SetCellPadding(5)
-    createFactionGrid:SetItemAutoSize(true)
-
-    local dryadsButton = loveframes.Create("button")
-    dryadsButton:SetText("Dryads")
-    createFactionGrid:AddItem(dryadsButton, 1, 1)
-
-    local gearpunkButton = loveframes.Create("button")
-    gearpunkButton:SetText("Gearpunk")
-    createFactionGrid:AddItem(gearpunkButton, 1, 2)
-
-    local iceButton = loveframes.Create("button")
-    iceButton:SetText("Ice Dragons")
-    createFactionGrid:AddItem(iceButton, 2, 1)
-
-    local minotaurButton = loveframes.Create("button")
-    minotaurButton:SetText("Minotaurs")
-    createFactionGrid:AddItem(minotaurButton, 2, 2)
-
-    createForm:AddItem(createFactionGrid)
-
-    function dryadsButton.OnClick(object)
-        menu:createGame(
-            createGameName:GetText(),
-            createGamePassword:GetText(),
-            "dryad")
+    local createButton = loveframes.Create("button")
+    createButton:SetText("Create")
+    function createButton.OnClick(object)
+        self:createGame(createGameName:GetText(), createGamePassword:GetText())
     end
-
-    function gearpunkButton.OnClick(object)
-        menu:createGame(
-            createGameName:GetText(),
-            createGamePassword:GetText(),
-            "gearpunk")
-    end
-
-    function iceButton.OnClick(object)
-        menu:createGame(
-            createGameName:GetText(),
-            createGamePassword:GetText(),
-            "ice")
-    end
-
-    function minotaurButton.OnClick(object)
-        menu:createGame(
-            createGameName:GetText(),
-            createGamePassword:GetText(),
-            "minotaur")
-    end
+    createForm:AddItem(createButton)
 
     return createForm
 end
@@ -137,67 +86,12 @@ function menu:createJoinGameForm()
     joinGamePassword:SetPlaceholderText("game password")
     joinForm:AddItem(joinGamePassword)
 
-    local joinFactionLabel = loveframes.Create("text")
-    joinFactionLabel:SetText("I'd like to play:")
-    joinForm:AddItem(joinFactionLabel)
-
-    local joinFactionGrid = loveframes.Create("grid")
-    joinFactionGrid:SetRows(2)
-    joinFactionGrid:SetColumns(2)
-    joinFactionGrid:SetCellWidth(90)
-    joinFactionGrid:SetCellHeight(25)
-    joinFactionGrid:SetCellPadding(5)
-    joinFactionGrid:SetItemAutoSize(true)
-
-    local dryadsButton = loveframes.Create("button")
-    -- dryadsButton:SetEnabled(false)
-    dryadsButton:SetText("Dryads")
-    joinFactionGrid:AddItem(dryadsButton, 1, 1)
-
-    local gearpunkButton = loveframes.Create("button")
-    -- gearpunkButton:SetEnabled(false)
-    gearpunkButton:SetText("Gearpunk")
-    joinFactionGrid:AddItem(gearpunkButton, 1, 2)
-
-    local iceButton = loveframes.Create("button")
-    -- iceButton:SetEnabled(false)
-    iceButton:SetText("Ice Dragons")
-    joinFactionGrid:AddItem(iceButton, 2, 1)
-
-    local minotaurButton = loveframes.Create("button")
-    -- minotaurButton:SetEnabled(false)
-    minotaurButton:SetText("Minotaurs")
-    joinFactionGrid:AddItem(minotaurButton, 2, 2)
-
-    function dryadsButton.OnClick(object)
-        self:joinGame(
-            joinGameName:GetText(),
-            joinGamePassword:GetText(),
-            "dryads")
+    local joinButton = loveframes.Create("button")
+    joinButton:SetText("Create")
+    function joinButton.OnClick(object)
+        self:joinGame(joinGameName:GetText(), joinGamePassword:GetText())
     end
-
-    function gearpunkButton.OnClick(object)
-        self:joinGame(
-            joinGameName:GetText(),
-            joinGamePassword:GetText(),
-            "gearpunk")
-    end
-
-    function iceButton.OnClick(object)
-        self:joinGame(
-            joinGameName:GetText(),
-            joinGamePassword:GetText(),
-            "ice")
-    end
-
-    function minotaurButton.OnClick(object)
-        self:joinGame(
-            joinGameName:GetText(),
-            joinGamePassword:GetText(),
-            "minotaur")
-    end
-
-    joinForm:AddItem(joinFactionGrid)
+    joinForm:AddItem(joinButton)
 
     return joinForm
 end

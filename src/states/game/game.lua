@@ -89,7 +89,7 @@ end
 
 function game:draw()
     love.graphics.draw(self.tableImage, 0, 0, 0)
-    drawFaction(self.factions.dryad)
+    drawFaction(self.faction)
 
     loveframes.draw()
 end
@@ -109,14 +109,16 @@ function game:drawToCarry()
     self:send{command="drawToCarry", card=card.id}
 end
 
-local function fieldToCarry(zones, x, y)
+local function fieldToCarry(x, y)
     card = zones.field:removeCardAt(x, y)
     zones.carry:addCard(card)
+    self:send{command="fieldToCarry", card=card.id}
 end
 
 local function handToCarry(zones, x, y)
     card = zones.hand:removeCardAt(x, y)
     zones.carry:addCard(card)
+    self:send{command="fieldToCarry", card=card.id}
 end
 
 local function carryToHand(zones)
