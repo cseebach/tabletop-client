@@ -77,8 +77,8 @@ function Deck:initialize()
 end
 
 function Deck:draw()
-    if self.cards[1] then
-        self.cards[1]:draw()
+    if self.cards[#self.cards] then
+        self.cards[#self.cards]:draw()
     end
 	love.graphics.printf(tostring(#self.cards), self.x, self.y, 12)
 end

@@ -12,7 +12,7 @@ function game:init()
 end
 
 function game:setSocket(socket)
-    socket:settimeout(.01)
+    socket:settimeout(.02)
     self.net = SocketWrapper(socket)
 end
 
@@ -38,10 +38,15 @@ function game:update(dt)
 end
 
 function game:draw()
+    love.graphics.push()
+    love.graphics.scale(scale)
+    
     love.graphics.draw(self.tableImage, 0, 0, 0)
     self.game:draw()
 
     loveframes.draw()
+    
+    love.graphics.pop()
 end
 
 function game:mousemoved(x, y)
@@ -82,13 +87,17 @@ function game:keypressed(key, unicode)
         self.game:switchView(3)
     elseif key == "4" then
         self.game:switchView(4)
+    elseif key == "h" then
+        self.game:highlightSet(true)
     end
 
     loveframes.keypressed(key, unicode)
 end
 
 function game:keyreleased(key)
-    -- your code
+    if key == "h" then
+        self.game:highlightSet(false)
+    end
 
     loveframes.keyreleased(key)
 end

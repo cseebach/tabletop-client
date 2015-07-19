@@ -50,6 +50,14 @@ function Card:draw()
     end
 end
 
+function Card:highlight()
+    local image = self.front
+    if self.faceDown then
+        image = self.back
+    end
+    love.graphics.draw(image, 0, 0)
+end
+
 function Card:inside(x, y)
     return  utils.within(self.x, 375/2, x) and
             utils.within(self.y, 525/2, y)

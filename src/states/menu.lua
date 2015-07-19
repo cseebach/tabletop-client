@@ -104,7 +104,7 @@ function menu:init()
     menuGrid:SetCellHeight(500)
 
     menuGrid:SetSize(600, 500)
-    menuGrid:CenterWithinArea(0,0,1920,1080)
+    menuGrid:CenterWithinArea(0,0,1280,720)
 
     local createForm = self:createNewGameForm()
     menuGrid:AddItem(createForm, 1, 1)

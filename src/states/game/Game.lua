@@ -33,6 +33,8 @@ function Game:initialize(net)
 
     self.viewing = self.factions.dryad
     self.sitting = nil
+    
+    self.mouse = {x=0, y=0}
 end
 
 local onUpdate = {}
@@ -91,19 +93,40 @@ end
 
 function Game:processUpdates(updates)
     for _, update in ipairs(updates) do
-        print(serpent.block(update))
+        -- print(serpent.block(update))
         self:processUpdate(update)
-        print(serpent.block(self.carried))
+        -- print(serpent.block(self.carried))
     end
 end
 
+function Game:highlightSet(on)
+    self.highlightOn = on
+end
+
 function Game:draw()
+
+
     local sitting = self.sitting == self.viewing
     self.viewing:draw(sitting)
     self.carry:draw()
+    
+    if self.highlightOn then
+        self:highlight()
+    end
+
+end
+
+function Game:highlight()
+    if self.viewing.field:getCardAt(self.mouse.x, self.mouse.y) then
+        self.viewing.field:getCardAt(self.mouse.x, self.mouse.y):highlight()
+    elseif self.viewing.hand:getCardAt(self.mouse.x, self.mouse.y) then
+        self.viewing.hand:getCardAt(self.mouse.x, self.mouse.y):highlight()
+    end
 end
 
 function Game:mouseMoved(x, y)
+    x = x / scale
+    y = y / scale
     self.carry:mouseMoved(x, y)
     self.mouse = {x=x, y=y}
 end
@@ -129,7 +152,7 @@ function Game:leftreleased(x, y)
             self.net:send{action="toHand", card=card.id, faction=self.viewing.name}
         else
             local card = self.carry:to(self.viewing.field)
-            self.net:send{action="toField", card=card.id, faction=self.viewing.name, x=x, y=y}
+            self.net:send{action="toField", card=card.id, faction=self.viewing.name, x=card.x, y=card.y}
         end
     end
 end
