@@ -27,7 +27,7 @@ function Zone:setCards(cards)
 end
 
 function Zone:removeTop()
-	return table.remove(self.cards, 1)
+	return table.remove(self.cards, #self.cards)
 end
 
 function Zone:removeID(id)
@@ -38,27 +38,30 @@ function Zone:removeID(id)
 end
 
 function Zone:getCardAt(x, y)
-    local last = 0
-    for i, card in ipairs(self.cards) do
+    for i=#self.cards,1,-1 do
+        local card = self.cards[i]
         if card:inside(x, y) then return card end
     end
     return nil
 end
 
 function Zone:removeCardAt(x, y)
-    local last = 0
-    for i, card in ipairs(self.cards) do
+    for i=#self.cards,1,-1 do
+        local card = self.cards[i]
         if card:inside(x, y) then return table.remove(self.cards, i) end
     end
 end
 
 function Zone:from(carry)
-	carry:setCard(self:removeTop())
+    local card = self:removeTop()
+	carry:setCard(card)
+    return card
 end
 
 function Zone:fromAt(x, y, carry)
-	card = self:removeCardAt(x, y)
+	local card = self:removeCardAt(x, y)
 	carry:setCard(card)
+    return card
 end
 
 --- deck: where cards are drawn from
@@ -134,6 +137,7 @@ function Hand:cardAdded(card)
 end
 
 function Hand:draw(sitting)
+    
 	for _, card in ipairs(self.cards) do
 		card.faceDown = not sitting
 		card:draw()

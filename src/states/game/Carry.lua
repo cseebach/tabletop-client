@@ -37,8 +37,10 @@ function Carry:setCard(card)
 end
 
 function Carry:to(zone)
-    zone:addCard(self.card)
+    local card = self.card
+    zone:addCard(card)
     self.card = nil
+    return card
 end
 
 return Carry
