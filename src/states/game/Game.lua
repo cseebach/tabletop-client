@@ -24,6 +24,8 @@ function Game:initialize(net)
     }
 
     self.net = net
+    
+    self.cards = {}
 
     self.carried = {}
     self.carry = Carry:new(net)
@@ -32,53 +34,58 @@ function Game:initialize(net)
     self.sitting = nil
 end
 
-function Game:updateAddToDeck(update)
+local onUpdate = {}
+
+function onUpdate.addToDeck(game, update)
     card = Card:new(cards[update.template], update.card)
-    self.factions[update.faction].deck:addCard(card)
+    game.cards[update.card] = card
+    game.factions[update.faction].deck:addCard(card)
 end
 
-function Game:updateFromDeck(update)
-    card = self.factions[update.faction].deck:removeTop()
-    self.carried[card.id] = card
+function onUpdate.fromDeck(game, update)
+    card = game.factions[update.faction].deck:removeTop()
+    game.carried[card.id] = card
 end
 
-function Game:updateFromField(update)
-    card = self.factions[update.faction].field:removeID(card.id)
-    self.carried[card.id] = card
+function onUpdate.fromField(game, update)
+    card = game.factions[update.faction].field:removeID(card.id)
+    game.carried[card.id] = card
 end
 
-function Game:updateFromHand(update)
-    card = self.factions[update.faction].hand:removeID(card.id)
-    self.carried[card.id] = card
+function onUpdate.fromHand(game, update)
+    card = game.factions[update.faction].hand:removeID(card.id)
+    game.carried[card.id] = card
 end
 
-function Game:updateToField(update)
-    local card = self.carried[card.id]
-    self.carried[card.id] = nil
+function onUpdate.toField(game, update)
+    local card = game.carried[card.id]
+    game.carried[card.id] = nil
     card.x = update.x
     card.y = update.y
-    self.factions[update.faction].field:addCard(card)
+    game.factions[update.faction].field:addCard(card)
 end
 
-function Game:updateToHand(update)
-    local card = self.carried[card.id]
-    self.carried[card.id] = nil
-    card = self.factions[update.faction].hand:addCard(card)
+function onUpdate.toHand(game, update)
+    local card = game.carried[card.id]
+    game.carried[card.id] = nil
+    card = game.factions[update.faction].hand:addCard(card)
+end
+
+function onUpdate.flip(game, update)
+    local card = game.cards[update.card]
+    card:flip()
+end
+
+function onUpdate.use(game, update)
+    local card = game.cards[update.card]
+    card:toggleUsed()
 end
 
 function Game:processUpdate(update)
-    if update.action == "addToDeck" then
-        self:updateAddToDeck(update)
-    elseif update.action == "fromDeck" then
-        self:updateFromDeck(update)
-    elseif update.action == "fromField" then
-        self:updateFromField(update)
-    elseif update.action == "fromHand" then
-        self:updateFromHand(update)
-    elseif update.action == "toField" then
-        self:updateToField(update)
-    elseif update.action == "toHand" then
-        self:updateToHand(update)
+    action = update.action
+    print("update: "..action)
+    if onUpdate[action] then
+        onUpdate[action](self, update)
     end
 end
 

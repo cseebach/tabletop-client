@@ -22,6 +22,7 @@ function Card:initialize(cardData, id)
     self.y = 0
     self.scale = Card.default_scale
     self.id = id
+    self.used = false
 end
 
 function Card:flip()
