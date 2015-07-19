@@ -3,9 +3,9 @@ local menu = {}
 local loveframes = nil
 local socket = require "socket"
 local Gamestate = require "lib.hump.gamestate"
-local JSON = require "lib.JSON"
+local SocketWrapper = require "SocketWrapper"
 
-local game = require "states.game.game"
+local game = require "states.game.state"
 
 function menu:switchToGame()
     game:setSocket(self.socket)
@@ -19,11 +19,8 @@ function menu:joinGame(name, password, faction)
         password=password,
         faction=faction
     }
-    self.socket:send(JSON:encode(message).."\n")
-    local response, error = self.socket:receive()
-    print(response)
-    print(error)
-    local response = JSON:decode(response)
+    self.net:send(message)
+    local response = self.net:receiveAll()
     if response.action == "joined" then
         self:switchToGame()
     end
@@ -36,11 +33,8 @@ function menu:createGame(name, password, faction)
         password=password,
         faction=faction
     }
-    self.socket:send(JSON:encode(message).."\n")
-    local response, error = self.socket:receive()
-    print(response)
-    print(error)
-    local response = JSON:decode(response)
+    self.net:send(message)
+    local response = self.net:receiveAll()
     if response.action == "created" then
         self:switchToGame()
     end
@@ -98,7 +92,8 @@ end
 
 function menu:init()
     loveframes = require('lib.loveframes')
-    self.socket = socket.connect("localhost", 56789)
+    self.socket = socket.connect("45.55.211.1", 56789)
+    self.net = SocketWrapper:new(self.socket)
 
     local menuGrid = loveframes.Create("grid")
     menuGrid:SetState("menu")

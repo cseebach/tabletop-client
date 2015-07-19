@@ -4,8 +4,7 @@ local loveframes = nil
 local Game = require "states.game.Game"
 local Card = require "states.game.Card"
 local cards = require "states.game.cards"
-local SocketWrapper = require "states.game.SocketWrapper"
-local JSON = require "lib.JSON"
+local SocketWrapper = require "SocketWrapper"
 
 function game:init()
     loveframes = require('lib.loveframes')
@@ -26,7 +25,7 @@ end
 
 function game:ping()
     self.net:send{action="ping"}
-    response, error = self.net:receive()
+    local response, error = self.net:receive()
     if response then
         self.game:processUpdates(response.updates)
     end
